@@ -49,7 +49,7 @@ n = int(data_list[0])
 points = [i for i in range(0, n)]
 coordinates = data_list[1:]
 coordinate_list = [(coordinates[i * 2], coordinates[(i * 2) + 1]) for i in range(0, n)]
-# consolidated_list = [(points[i], coordinate_list[i]) for i in range(0, n)]
+consolidated_list = [(points[i], coordinate_list[i]) for i in range(0, n)]
 
 pairs = []
 for i in range(len(coordinate_list)):
