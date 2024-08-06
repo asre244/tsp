@@ -1,33 +1,31 @@
 import math
 
 
-def choosing_next_item(opt, chosen_list, counter, n, points_explored_2):
-
-    i = 0
+def choosing_next_item(first_point, x, decision_list, choices, last_choice, opt, chosen_list, counter, n, points_explored_2):
     if counter == 0:
         options = decision_list[opt]
         updated_options = options
     elif counter == n - 1:
         options = decision_list[opt]
-        updated_options = [item for item in options if 0 in item[0]]
+        updated_options = [item for item in options if first_point in item[0]]
     else:
         options = decision_list[opt]
-        starting_removed_options = [item for item in options if 0 not in item[0]]
-        updated_options = [item for item in starting_removed_options if not any(value in points_explored_2 for value in item[0])]
-    chosen = updated_options[i]
+        starting_removed_options = [item for item in options if first_point not in item[0]]
+        updated_options = [item for item in starting_removed_options if
+                           not any(value in points_explored_2 for value in item[0])]
+    chosen = updated_options[x]
     next_point = next(item for item in chosen[0] if item != opt)
     condition = bool(set([item for item in choices if item != opt]) & set(last_choice))
     if condition or counter == n - 1:
         choices.remove(opt)
         return chosen, next_point
     else:
-        i += 1
-        choosing_next_item(opt, chosen_list, counter, n)
-
+        x += 1
+        choosing_next_item(first_point, x, decision_list, choices, last_choice, opt, chosen_list, counter, n, points_explored_2)
 
 
 def neighbors(distance_matrix, coordinate_list, points):
-    trim = 42  # todo: change this to dynamic
+    trim = 50  # todo: change this to dynamic
     decision_list = []
     last_choice = []
     for i in points:
@@ -39,6 +37,7 @@ def neighbors(distance_matrix, coordinate_list, points):
             last_choice.append(i)
         pass
     return last_choice, decision_list
+
 
 with open(
         r'C:\Users\AjithSreenivasan\OneDrive - Robinson Bowmaker Paul\Coursera\Discrete Optimization\tsp\data\tsp_51_1',
@@ -66,6 +65,7 @@ for pair in pairs:
 
 last_choice, decision_list = neighbors(distance_matrix, coordinate_list, points)
 
+first_point = 30
 counter = 0
 total_distance = 0
 choices = points
@@ -73,11 +73,12 @@ chosen_list = []
 points_explored = []
 while counter < n:
     if counter == 0:
-        opt = 0
+        opt = first_point
         points_explored_2 = points_explored
     else:
         points_explored_2 = points_explored[:-1]
-    chosen, opt = choosing_next_item(opt, chosen_list, counter, n, points_explored_2)
+    chosen, opt = choosing_next_item(first_point, 0, decision_list, choices, last_choice, opt, chosen_list, counter, n,
+                                     points_explored_2)
     chosen_list.append(chosen)
     points_explored.append(opt)
     total_distance += chosen[1]
@@ -86,6 +87,8 @@ while counter < n:
 
 point_pairs = [i[0] for i in chosen_list]
 result = [item for item in point_pairs[0]]
+if result[0] != first_point:
+    result.reverse()
 for i in range(1, len(point_pairs) - 1):
     # Find the difference between the current tuple and the previous tuple
     exclusive_data = set(point_pairs[i]) - set(point_pairs[i - 1])
@@ -95,3 +98,16 @@ for i in range(1, len(point_pairs) - 1):
 # Convert result to a list and sort it if needed
 result = list(result)
 print(result)
+
+output_data = str(round(total_distance, 5)) + ' ' + str(0) + '\n'
+output_data += ' '.join(map(str, result))
+print(output_data)
+
+max_dist = max(i[1] for i in chosen_list)
+max_distance_conn = [item for item in chosen_list if item[1] == max_dist]
+
+for j in max_distance_conn[0][0]:
+    print(j)
+    chosen_in_solution = [item for item in chosen_list if j in item[0]]
+    print(chosen_in_solution)
+    pass
