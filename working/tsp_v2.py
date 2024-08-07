@@ -41,7 +41,7 @@ def neighbors(distance_matrix, coordinate_list, points_in_fn):
     return last_choice, decision_list
 
 
-def generating_result_in_format(chosen_list, total_distance):
+def generating_result_in_format(first_point, chosen_list, total_distance):
     point_pairs = [i[0] for i in chosen_list]
     result = [item for item in point_pairs[0]]
     if result[0] != first_point:
@@ -63,7 +63,7 @@ def generating_result_in_format(chosen_list, total_distance):
 
 
 with open(
-        r'C:\Users\AjithSreenivasan\OneDrive - Robinson Bowmaker Paul\Coursera\Discrete Optimization\tsp\data\tsp_51_1',
+        r'C:\Users\AjithSreenivasan\OneDrive - Robinson Bowmaker Paul\Coursera\Discrete Optimization\tsp\data\tsp_100_3',
         'r') as input_data_file:
     input_data = input_data_file.read()
 data_list = input_data.split()
@@ -90,7 +90,7 @@ last_choice, decision_list = neighbors(distance_matrix, coordinate_list, points)
 
 end_result = []
 for first_point in points:
-    print(first_point)
+    # print(first_point)
     counter = 0
     total_distance = 0
     choices = points.copy()
@@ -107,11 +107,10 @@ for first_point in points:
         chosen_list.append(chosen)
         points_explored.append(opt)
         total_distance += chosen[1]
-        print(counter, chosen)
+        # print(counter, chosen)
         counter += 1
 
-
-    generating_result_in_format(chosen_list, total_distance)
+    generating_result_in_format(first_point, chosen_list, total_distance)
 
     # creating a copy
     chosen_list_for_revision = chosen_list.copy()
@@ -201,15 +200,14 @@ for first_point in points:
 
     solutions = [[chosen_list, total_distance]]
     revised_list, revised_distance = improvement(chosen_list_for_revision, total_distance)
-    generating_result_in_format(revised_list, revised_distance)
-    solutions.append([revised_list, revised_distance])
+    generating_result_in_format(first_point, revised_list, revised_distance)
 
     while_counter = 0
-    while while_counter < 10:
+    while while_counter < 20:
         try:
-            revised_list, revised_distance = improvement(revised_list, revised_distance)
-            generating_result_in_format(revised_list, revised_distance)
             solutions.append([revised_list, revised_distance])
+            revised_list, revised_distance = improvement(revised_list, revised_distance)
+            generating_result_in_format(first_point, revised_list, revised_distance)
         except:
             break
         while_counter += 1
@@ -219,14 +217,13 @@ for first_point in points:
     if filtered:
         min_list = min(filtered, key=lambda x: x[1])
 
-    final_result = generating_result_in_format(min_list[0], min_list[1])
+    final_result = generating_result_in_format(first_point, min_list[0], min_list[1])
     end_result.append(min_list)
 
-filtered = [item for item in end_result if len(item[0]) == n]
-if filtered:
-    min_list = min(filtered, key=lambda x: x[1])
+if end_result:
+    min_list = min(end_result, key=lambda x: x[1])
     print(min_list)
 else:
     print("No list with exactly 51 coordinates found.")
 
-final_result = generating_result_in_format(min_list[0], min_list[1])
+final_result = generating_result_in_format(first_point, min_list[0], min_list[1])

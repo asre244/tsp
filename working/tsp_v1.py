@@ -42,7 +42,7 @@ def neighbors(distance_matrix, coordinate_list, points):
     return last_choice, decision_list
 
 
-def generating_result_in_format(chosen_list, total_distance):
+def generating_result_in_format(first_point, chosen_list, total_distance):
     point_pairs = [i[0] for i in chosen_list]
     result = [item for item in point_pairs[0]]
     if result[0] != first_point:
@@ -64,7 +64,7 @@ def generating_result_in_format(chosen_list, total_distance):
 
 
 with open(
-        r'C:\Users\AjithSreenivasan\OneDrive - Robinson Bowmaker Paul\Coursera\Discrete Optimization\tsp\data\tsp_51_1',
+        r'C:\Users\AjithSreenivasan\OneDrive - Robinson Bowmaker Paul\Coursera\Discrete Optimization\tsp\data\tsp_100_3',
         'r') as input_data_file:
     input_data = input_data_file.read()
 data_list = input_data.split()
@@ -89,7 +89,7 @@ for pair in pairs:
 
 last_choice, decision_list = neighbors(distance_matrix, coordinate_list, points)
 
-first_point = 3
+first_point = 0
 counter = 0
 total_distance = 0
 choices = points.copy()
@@ -109,7 +109,7 @@ while counter < n:
     # print(counter, chosen)
     counter += 1
 
-generating_result_in_format(chosen_list, total_distance)
+generating_result_in_format(first_point, chosen_list, total_distance)
 
 # creating a copy
 chosen_list_for_revision = chosen_list.copy()
@@ -199,14 +199,14 @@ def improvement(chosen_list_for_revision, total_distance):
 
 solutions = [[chosen_list, total_distance]]
 revised_list, revised_distance = improvement(chosen_list_for_revision, total_distance)
-generating_result_in_format(revised_list, revised_distance)
+generating_result_in_format(first_point, revised_list, revised_distance)
 solutions.append([revised_list, revised_distance])
 
 while_counter = 0
 while while_counter < 30:
     try:
         revised_list, revised_distance = improvement(revised_list, revised_distance)
-        generating_result_in_format(revised_list, revised_distance)
+        generating_result_in_format(first_point, first_point, revised_list, revised_distance)
         solutions.append([revised_list, revised_distance])
     except:
         break
@@ -220,4 +220,4 @@ if filtered:
 else:
     print("No list with exactly 51 coordinates found.")
 
-final_result = generating_result_in_format(min_list[0], min_list[1])
+final_result = generating_result_in_format(first_point, min_list[0], min_list[1])
