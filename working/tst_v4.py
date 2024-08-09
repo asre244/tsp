@@ -1,14 +1,41 @@
-import tsplib95  # "@author of external package: Michael Ritter. Need to pip install this package"
+import math
 import random
 import math
 import time
 import copy
-import matplotlib.pyplot as plt
 
-# Change tsp file name to run on separate tsp datasets
-data = tsplib95.load(r'C:\Users\AjithSreenivasan\OneDrive - Robinson Bowmaker Paul\Coursera\Discrete Optimization\tsp\working\pr107.tsp')
-cities = list(data.get_nodes())
 
+class CoordinateStorage:
+    def __init__(self):
+        self.coordinates = {}
+
+    def add_point(self, name, x, y):
+        self.coordinates[name] = (x, y)
+
+    def calculate_distance(self, name1, name2):
+        x1, y1 = self.coordinates[name1]
+        x2, y2 = self.coordinates[name2]
+        distance = round(math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2), 2)
+        return distance
+
+
+# Example usage
+coordinate_matrix = CoordinateStorage()
+
+
+with open(
+        r'C:\Users\AjithSreenivasan\OneDrive - Robinson Bowmaker Paul\Coursera\Discrete Optimization\tsp\data\tsp_51_1',
+        'r') as input_data_file:
+    input_data = input_data_file.read()
+data_list = input_data.split()
+data_list = list(map(float, data_list))
+n = int(data_list[0])
+points = [i for i in range(0, n)]
+coordinates = data_list[1:]
+coordinate_list = [(i, coordinates[i * 2], coordinates[(i * 2) + 1]) for i in range(0, n)]
+
+for coordinate in coordinate_list:
+    coordinate_matrix.add_point(coordinate[0], coordinate[1], coordinate[2])
 
 def annealing(initial_state):
     """Peforms simulated annealing to find a solution"""
@@ -23,7 +50,7 @@ def annealing(initial_state):
     same_solution = 0
     same_cost_diff = 0
 
-    while same_solution < 200 and same_cost_diff < 10000:
+    while same_solution < 1500 and same_cost_diff < 150000:
         neighbor = get_neighbors(solution)
 
         # Check if neighbor is best so far
@@ -66,7 +93,7 @@ def get_cost(state):
             to_city = state[i + 1]
         else:
             to_city = state[0]
-        distance += data.get_weight(from_city, to_city)
+        distance += coordinate_matrix.calculate_distance(from_city, to_city)
     fitness = 1 / float(distance)
     return fitness
 
@@ -142,19 +169,9 @@ convergence_time = []
 for i in range(10):
     print(i)
     start = time.time()
-    route, route_distance = annealing(cities)
+    route, route_distance = annealing(points)
     time_elapsed = time.time() - start
     best_route_distance.append(route_distance)
     best_route.append(route)
     convergence_time.append(time_elapsed)
 
-    # Plot Routes
-    xs = [data.node_coords[i][0] for i in route]
-    ys = [data.node_coords[i][1] for i in route]
-
-    # plt.clf()
-    # 'bo-' means blue color, round points, solid lines
-    # plt.plot(xs, ys, 'y--')
-    # plt.xlabel('X Coordinates')
-    # plt.ylabel('Y Coordinates')
-    # plt.savefig(fr'C:\Users\AjithSreenivasan\OneDrive - Robinson Bowmaker Paul\Coursera\Discrete Optimization\tsp\working\test_data\{i}.png')

@@ -32,7 +32,6 @@ class CoordinateStorage:
 
 coordinate_matrix = CoordinateStorage()
 
-
 with open(
         r'C:\Users\AjithSreenivasan\OneDrive - Robinson Bowmaker Paul\Coursera\Discrete Optimization\tsp\data\tsp_51_1',
         'r') as input_data_file:
@@ -47,9 +46,10 @@ coordinate_list = [(i, coordinates[i * 2], coordinates[(i * 2) + 1]) for i in ra
 for coordinate in coordinate_list:
     coordinate_matrix.add_point(coordinate[0], coordinate[1], coordinate[2])
 
-
-result = []
+end_result = []
 for point in points:
+    print(point)
+    result = []
     counter = 0
     total_distance = 0
     points_explored = []
@@ -69,38 +69,38 @@ for point in points:
         total_distance += trip_distance
     result.append([points_explored, total_distance])
 
-final_result = min(result, key=lambda x: x[1])
+    final_result = result[0]
+    tour = result[0][0]
+    tour_edges = [(tour[i - 1], tour[i]) for i in range(n)]
 
+    improved = True
+    while improved:
+        improved = False
+        for l in range(n):
+            for m in range(l + 1, n):
+                # current edges
+                current_tour_1 = (tour[l], tour[l + 1])
+                current_tour_2 = (tour[m], tour[(m + 1) % n])
+                current_length = (coordinate_matrix.calculate_distance(current_tour_1[0], current_tour_1[1]) +
+                                  coordinate_matrix.calculate_distance(current_tour_2[0], current_tour_2[1]))
 
-def improve(solution, initial_distance):
-    distance = 0
-    for i in range(len(solution) - 1):
-        distance_calc = coordinate_matrix.calculate_distance(solution[i], solution[i + 1])
-        if distance_calc > distance:
-            distance = distance_calc
-            point = solution[i + 1]
+                # new_edges
+                new_tour_1 = (tour[l], tour[m])
+                new_tour_2 = (tour[l + 1], tour[(m + 1) % n])
+                new_length = (coordinate_matrix.calculate_distance(new_tour_1[0], new_tour_1[1]) +
+                              coordinate_matrix.calculate_distance(new_tour_2[0], new_tour_2[1]))
 
-    closest_point, trip_distance = coordinate_matrix.find_closest_point(point, [])
-    solution.remove(point)
-    index = solution.index(closest_point)
-    solution.insert(index + 1, point)
-
+                if new_length < current_length:
+                    improved = True
+                    tour[l + 1:m + 1] = tour[l + 1:m + 1][::-1]
+                    tour_edges = [(tour[i - 1], tour[i]) for i in range(n)]
+    final_tour = [tour_edges[i][0] for i in range(n)]
     new_distance = 0
-    for i in range(len(solution) - 1):
-        sum_distance = coordinate_matrix.calculate_distance(solution[i], solution[i + 1])
+    for i in range(n):
+        sum_distance = coordinate_matrix.calculate_distance(final_tour[i], final_tour[(i + 1) % n])
         new_distance += sum_distance
-    new_distance += coordinate_matrix.calculate_distance(solution[0], solution[-1])
+    print(point, new_distance)
+    end_result.append([final_tour, new_distance])
+    pass
 
-    return solution, new_distance
-
-
-improved_result, improved_distance = improve(final_result[0], final_result[1])
-
-out_result = [final_result, [improved_result, improved_distance]]
-count = 0
-while count < 5000:
-    improved_result, improved_distance = improve(improved_result, improved_distance)
-    out_result.append([improved_result, improved_distance])
-    count += 1
-
-final_out = min(out_result, key=lambda x: x[1])
+final_out = min(end_result, key=lambda x: x[1])

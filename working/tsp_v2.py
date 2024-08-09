@@ -63,7 +63,7 @@ def generating_result_in_format(first_point, chosen_list, total_distance):
 
 
 with open(
-        r'C:\Users\AjithSreenivasan\OneDrive - Robinson Bowmaker Paul\Coursera\Discrete Optimization\tsp\data\tsp_100_3',
+        r'C:\Users\AjithSreenivasan\OneDrive - Robinson Bowmaker Paul\Coursera\Discrete Optimization\tsp\data\tsp_51_1',
         'r') as input_data_file:
     input_data = input_data_file.read()
 data_list = input_data.split()
